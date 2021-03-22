@@ -208,7 +208,7 @@ def TRAIN(net, train_loader, valid_loader,  num_epochs, eval_every, total_step, 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(device)
 model = Siamese()
-num_epochs = 5
+num_epochs = 20
 eval_every = 10
 total_step = len(loader)*num_epochs
 best_val_loss = None
@@ -222,7 +222,7 @@ TRAIN(model, loader, valid_loader, num_epochs, eval_every,
 
 
 def getThreshold(valid_loader,model):
-  theta = np.linspace(0.5,0.6,20, False)
+  theta = np.linspace(0.6,0.8,40, False)
   acc  = []
   for thres in theta:
     total_correct = 0
