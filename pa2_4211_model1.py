@@ -46,7 +46,7 @@ class CustomDataset(Dataset):
 
 
 
-test = CustomDataset(os.path.join(PATH,'/train.csv'),os.path.join(PATH,'/index.txt'),'asd')
+test = CustomDataset(os.path.join(PATH,'train.csv'),os.path.join(PATH,'index.txt'),'asd')
 train_size = int(0.8*len(test)) ## __len__
 valid_size = len(test) - train_size
 full_train, full_valid = random_split(test, [train_size, valid_size])
