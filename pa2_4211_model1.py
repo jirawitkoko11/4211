@@ -54,7 +54,7 @@ loader = torch.utils.data.DataLoader(full_train, batch_size=128, shuffle=True, n
 valid_loader = torch.utils.data.DataLoader(full_valid, batch_size=128, shuffle=False, num_workers=2)
 
 
-batch_in = 128
+
 class Siamese(nn.Module):
   def __init__(self):
     super(Siamese, self).__init__()
@@ -93,6 +93,7 @@ class Siamese(nn.Module):
     return x.view(-1)
 
   def getfeature(self,pic):
+    batch_in = pic.shape[0]
     x = F.relu(self.bn1(self.conv1(pic).view(batch_in,32*32*32)).view(batch_in,32,32,32))
     x = F.relu(self.bn2(self.conv2(x).view(batch_in,32*32*32)).view(batch_in,32,32,32))
     x = self.maxPool(x)
