@@ -41,7 +41,7 @@ class CustomDataset(Dataset):
     Resize = transforms.Compose([transforms.Resize([32,32]),
                                  transforms.ToTensor(),
                                  transforms.Normalize(0.5,0.5)])
-    img = Image.open(os.path.join(PATH,pic_path)).convert('L')
+    img = Image.open(pic_path).convert('L')
     return Resize(img)
 
 
