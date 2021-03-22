@@ -218,3 +218,31 @@ model = model.to(device)
 
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device)
+
+
+
+def getThreshold(valid_loader,model):
+  theta = np.linspace(0.5,0.6,20, False)
+  acc  = []
+  for thres in theta:
+    total_correct = 0
+    total_cmp = 0
+    with torch.no_grad():
+      model.eval()
+      for val_pic1,val_pic2, val_labels in valid_loader:
+        val_pic1, val_pic2 , val_labels = val_pic1.to(device), val_pic2.to(device), val_labels.to(device)
+        val_outputs = model(val_pic1,val_pic2)
+        i = 0
+        for out in val_outputs:
+          total_cmp += 1
+          check = 0
+          if out >= thres:
+            check = 1
+          if check == val_labels[i]:
+            total_correct += 1
+      print(str(thres)+"  "+str(total_correct/total_cmp))
+      acc.append(total_correct/total_cmp)
+  return acc
+
+
+getThreshold(valid_loader,model)
