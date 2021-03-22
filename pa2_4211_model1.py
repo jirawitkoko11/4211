@@ -46,12 +46,11 @@ class CustomDataset(Dataset):
 
 
 
+train = CustomDataset(os.path.join(PATH,'train.csv'),os.path.join(PATH,'index.txt'),'asd')
+valid = CustomDataset(os.path.join(PATH,'train.csv'),os.path.join(PATH,'index.txt'),'asd')
 test = CustomDataset(os.path.join(PATH,'train.csv'),os.path.join(PATH,'index.txt'),'asd')
-train_size = int(0.8*len(test)) ## __len__
-valid_size = len(test) - train_size
-full_train, full_valid = random_split(test, [train_size, valid_size])
-loader = torch.utils.data.DataLoader(full_train, batch_size=128, shuffle=True, num_workers=2)
-valid_loader = torch.utils.data.DataLoader(full_valid, batch_size=128, shuffle=False, num_workers=2)
+loader = torch.utils.data.DataLoader(train, batch_size=128, shuffle=True, num_workers=2)
+valid_loader = torch.utils.data.DataLoader(valid, batch_size=128, shuffle=False, num_workers=2)
 
 
 
@@ -222,7 +221,7 @@ TRAIN(model, loader, valid_loader, num_epochs, eval_every,
 
 
 def getThreshold(valid_loader,model):
-  theta = np.linspace(0.6,0.8,40, False)
+  theta = np.linspace(0.4,1,60, False)
   acc  = []
   for thres in theta:
     total_correct = 0
