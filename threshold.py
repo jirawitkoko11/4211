@@ -117,7 +117,7 @@ class Siamese(nn.Module):
 
 
 def load_checkpoint(model, optimizer):
-    save_path = f'cifar_net.pt'
+    save_path = f'test_net.pt'
     state_dict = torch.load(save_path)
     model.load_state_dict(state_dict['model_state_dict'])
     optimizer.load_state_dict(state_dict['optimizer_state_dict'])
@@ -126,7 +126,7 @@ def load_checkpoint(model, optimizer):
 
 
 def getThreshold(valid_loader,model):
-  theta = np.linspace(0.6,0.8,40, False)
+  theta = np.linspace(0,1,100, False)
   acc  = []
   for thres in theta:
     total_correct = 0
