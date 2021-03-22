@@ -15,7 +15,7 @@ import torch.optim as optim
 from torch.utils.data import random_split
 
 
-PATH = '/content/drive/MyDrive/4211/pa2'
+PATH = './pa2'
 class CustomDataset(Dataset):
   def __init__(self,df_path,txt_path,img_path):
     df = pd.read_csv(df_path)
