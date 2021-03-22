@@ -164,8 +164,6 @@ def TRAIN(net, train_loader, valid_loader,  num_epochs, eval_every, total_step, 
             # Forward pass
             outputs = net(pic1,pic2)
             preds = outputs.data
-            print(labels)
-            print(outputs)
             loss = criterion(outputs, labels)
 
             # Backward and optimize
