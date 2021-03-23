@@ -114,17 +114,18 @@ class Siamese(nn.Module):
 
 
 
-def pltThreshold(thres,acc):
+def pltThreshold(thres,acc,bestT,bestA,save_path):
   plt.plot(thres,acc)
   plt.xlabel('threshold')
   plt.ylabel('accuracy')
-  plt.title('threshold vs accuracy')
-  plt.legend()
-  plt.savefig('TvsAcc.png',dpi=300)
+  plt.title('threshold vs accuracy\n best theta = %.3f which gives %.4f accuracy',(bestT,bestA))
+  plt.savefig(save_path,dpi=300)
 
-def getThreshold(valid_loader,model):
-  theta = np.linspace(0.4,1,60, False)
+def getThreshold(valid_loader,model,save_path):
+  theta = np.linspace(0.4,0.9,50, False)
   acc  = []
+  bestT = 0
+  bestA = 0
   for thres in theta:
     total_correct = 0
     total_cmp = 0
@@ -141,9 +142,13 @@ def getThreshold(valid_loader,model):
             check = 1
           if check == val_labels[i]:
             total_correct += 1
-    print(str(thres)+"  "+str(total_correct/total_cmp))
+    running_acc = total_correct/total_cmp
+    print(str(thres)+"  "+str(running_acc))
+    if(bestA < running_acc):
+      bestA = running_acc
+      bestT = thres
     acc.append(total_correct/total_cmp)
-  pltThreshold(theta,acc)
+  pltThreshold(theta,acc,bestT,bestA,save_path)
   return acc
 
 def load_checkpoint(model, optimizer, save_path):
@@ -153,8 +158,8 @@ def load_checkpoint(model, optimizer, save_path):
     val_loss = state_dict['val_loss']
     print(f'Model loaded from <== {save_path}')
 
-
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 model = Siamese()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 load_checkpoint(model,optimizer,'model1_net.pt')
-getThreshold(valid_loader,model.to(device))
+getThreshold(valid_loader,model.to(device),'M1TA')
