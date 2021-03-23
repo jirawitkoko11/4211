@@ -127,17 +127,17 @@ def save_checkpoint(save_path, model, optimizer, val_loss):
 
     print(f'Model saved to ==> {save_path}')
 
-def plotLoss(train,val,step):
+def plotLoss(train,val,step, save_path):
   plt.plot(step,train, label = "train loss")
   plt.plot(step,val, label = "validation loss")
   plt.xlabel('step')
   plt.ylabel('loss')
   plt.title('train vs validation loss')
   plt.legend()
-  plt.savefig('trainVsVal.png',dpi=300)
+  plt.savefig(save_path,dpi=300)
 
 
-def TRAIN(net, train_loader, valid_loader,  num_epochs, eval_every, total_step, criterion, optimizer, val_loss, device, save_path):
+def TRAIN(net, train_loader, valid_loader,  num_epochs, eval_every, total_step, criterion, optimizer, val_loss, device, save_path, plot_path):
     trainset_loss = []
     valset_loss = []
     step = []
@@ -201,7 +201,7 @@ def TRAIN(net, train_loader, valid_loader,  num_epochs, eval_every, total_step, 
                         best_val_loss = average_val_loss
                         save_checkpoint(save_path, net, optimizer, best_val_loss)
 
-    plotLoss(trainset_loss,valset_loss,step)
+    plotLoss(trainset_loss,valset_loss,step,plot_path)
 
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -217,21 +217,22 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
-      total_step, criterion, optimizer, best_val_loss, device, 'model1_net.pt')
+      total_step, criterion, optimizer, best_val_loss, device, 'model1_net.pt','Loss_M1.png')
 
 
 
-def pltThreshold(thres,acc):
+def pltThreshold(thres,acc,bestT,bestA,save_path):
   plt.plot(thres,acc)
   plt.xlabel('threshold')
   plt.ylabel('accuracy')
-  plt.title('threshold vs accuracy')
-  plt.legend()
-  plt.savefig('TvsAcc.png',dpi=300)
+  plt.title('threshold vs accuracy\n best theta = %.3f which gives %.4f accuracy',(bestT,bestA))
+  plt.savefig(save_path,dpi=300)
 
-def getThreshold(valid_loader,model):
-  theta = np.linspace(0.4,1,60, False)
+def getThreshold(valid_loader,model,save_path):
+  theta = np.linspace(0.4,0.9,50, False)
   acc  = []
+  bestT = 0
+  bestA = 0
   for thres in theta:
     total_correct = 0
     total_cmp = 0
@@ -248,9 +249,13 @@ def getThreshold(valid_loader,model):
             check = 1
           if check == val_labels[i]:
             total_correct += 1
-      print(str(thres)+"  "+str(total_correct/total_cmp))
-      acc.append(total_correct/total_cmp)
-      pltThreshold(theta,acc)
+    running_acc = total_correct/total_cmp
+    #print(str(thres)+"  "+str(running_acc))
+    if(bestA < running_acc):
+      bestA = running_acc
+      bestT = thres
+    acc.append(total_correct/total_cmp)
+  pltThreshold(theta,acc,bestT,bestA,save_path)
   return acc
 
 def load_checkpoint(model, optimizer, save_path):
@@ -260,7 +265,329 @@ def load_checkpoint(model, optimizer, save_path):
     val_loss = state_dict['val_loss']
     print(f'Model loaded from <== {save_path}')
 
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 model = Siamese()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 load_checkpoint(model,optimizer,'model1_net.pt')
-getThreshold(valid_loader,model.to(device))
+getThreshold(valid_loader,model.to(device),'T1.png')
+
+
+
+
+
+
+##########################################################improve the model ###############################################################
+
+###########################################      CHANGE OPTIMIZER     ##############################
+
+#############model 1 ############################
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+print(device)
+model = Siamese()
+model = model.to(device)
+num_epochs = 20
+eval_every = 10
+total_step = len(loader)*num_epochs
+best_val_loss = None
+criterion = nn.BCELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay = 0.001)  #### change learning rate to 0.01 and add weight_decay
+TRAIN(model, loader, valid_loader, num_epochs, eval_every,
+      total_step, criterion, optimizer, best_val_loss, device ,'model2_net.pt','Loss_M2.png')
+
+load_checkpoint(model,optimizer,'model2_net.pt')
+getThreshold(valid_loader,model,'T2.png')
+##########################end of model 1
+
+
+#############model 2 ############################
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+print(device)
+model = Siamese()
+model = model.to(device)
+num_epochs = 1
+eval_every = 4
+total_step = len(loader)*num_epochs
+best_val_loss = None
+criterion = nn.BCELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay = 0.01)  ######### add only weight_decay
+
+
+TRAIN(model, loader, valid_loader, num_epochs, eval_every,
+      total_step, criterion, optimizer, best_val_loss, device ,'model3_net.pt','Loss_M3.png')
+
+load_checkpoint(model,optimizer,'model3_net.pt')
+getThreshold(valid_loader,model,'T3.png')
+##########################end of model 2
+
+
+#############model 3 ############################
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+print(device)
+model = Siamese()
+model = model.to(device)
+num_epochs = 25  #####increase the number of epoch
+eval_every = 10
+total_step = len(loader)*num_epochs
+best_val_loss = None
+criterion = nn.BCELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay = 0.001) ######add weight_decay
+
+TRAIN(model, loader, valid_loader, num_epochs, eval_every,
+      total_step, criterion, optimizer, best_val_loss, device ,' model4_net.pt','Loss_M4.png')
+
+load_checkpoint(model,optimizer,'model4_net.pt')
+getThreshold(valid_loader,model,'T4.png')
+##########################end of model 3
+
+########################################################end of change optimizer #####################################
+
+################################################### Change network ##############################################
+class Siamese2(nn.Module):
+  def __init__(self):
+    super(Siamese2, self).__init__()
+    #####Convolutional layers###############
+    self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size= 3,stride=1, padding=1)
+    self.conv2 = nn.Conv2d(in_channels=32, out_channels=32, kernel_size= 3,stride=1, padding=1)
+    self.conv3 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size= 3,stride=1, padding=1)
+    self.conv4 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size= 3,stride=1, padding=1)
+    self.conv5 = nn.Conv2d(in_channels=128, out_channels=256, kernel_size= 3,stride=1, padding=1)
+    self.conv6 = nn.Conv2d(in_channels=256, out_channels=256, kernel_size= 3,stride=1, padding=1) ##new
+    self.conv7 = nn.Conv2d(in_channels=256, out_channels=512, kernel_size= 3,stride=1, padding=1)
+
+
+    self.bn1 = nn.BatchNorm1d(32*32*32)
+    self.bn2 = nn.BatchNorm1d(32*32*32)
+    self.bn3 = nn.BatchNorm1d(16*16*64)
+    self.bn4 = nn.BatchNorm1d(16*16*128)
+    self.bn5 = nn.BatchNorm1d(16*16*256)
+    self.bn6 = nn.BatchNorm1d(16*16*256) #new
+    self.bn7 = nn.BatchNorm1d(16*16*512)
+
+    self.maxPool = nn.MaxPool2d(kernel_size=2,stride=2,padding=0)
+    self.avgPool = nn.AvgPool2d(kernel_size=16,padding=0)
+    ##########end of Convolutional layers###########
+    
+    ##########linear layers###################
+    self.fc1 = nn.Linear(512,512)
+    self.drop = nn.Dropout(0.5)
+    self.fc2 = nn.Linear(512,1)
+
+    self.sigmoid = nn.Sigmoid()
+
+    ############end of linear layers################
+  def forward(self,pic1,pic2):
+    x = self.aggregation(pic1,pic2)
+    x = F.relu(x)
+    x = self.drop(x)
+    x = self.sigmoid(self.fc2(x))
+    return x.view(-1)
+
+  def getfeature(self,pic):
+    batch_in = pic.shape[0]
+    x = F.relu(self.bn1(self.conv1(pic).view(batch_in,32*32*32)).view(batch_in,32,32,32))
+    x = F.relu(self.bn2(self.conv2(x).view(batch_in,32*32*32)).view(batch_in,32,32,32))
+    x = self.maxPool(x)
+    x = F.relu(self.bn3(self.conv3(x).view(batch_in,64*16*16)).view(batch_in,64,16,16))
+    x = F.relu(self.bn4(self.conv4(x).view(batch_in,128*16*16)).view(batch_in,128,16,16))
+    x = F.relu(self.bn5(self.conv5(x).view(batch_in,256*16*16)).view(batch_in,256,16,16))
+    x = F.relu(self.bn6(self.conv6(x).view(batch_in,256*16*16)).view(batch_in,256,16,16)) ##new
+    x = F.relu(self.bn7(self.conv7(x).view(batch_in,512*16*16)).view(batch_in,512,16,16))
+    x = self.avgPool(x)
+    x = x.view(-1,1*512)
+    return x
+
+    #############Aggregation##################
+  def aggregation(self,pic1,pic2):
+    pic1_vector = self.getfeature(pic1)
+    pic2_vector = self.getfeature(pic2)
+    diff = torch.abs(torch.sub(pic1_vector,pic2_vector))
+    return diff
+    #############end of Aggregation##################
+
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+print(device)
+model = Siamese2()
+model = model.to(device)
+num_epochs = 20
+eval_every = 10
+total_step = len(loader)*num_epochs
+best_val_loss = None
+criterion = nn.BCELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+
+TRAIN(model, loader, valid_loader, num_epochs, eval_every,
+      total_step, criterion, optimizer, best_val_loss, device ,'model5_net.pt', 'Loss_M5.png')
+
+load_checkpoint(model,optimizer,'model5_net.pt')
+getThreshold(valid_loader,model,'T5.png')
+
+#####################################end of model 5
+
+####################################model 6
+class Siamese3(nn.Module):
+  def __init__(self):
+    super(Siamese3, self).__init__()
+    #####Convolutional layers###############
+    self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size= 3,stride=1, padding=1)
+    self.conv2 = nn.Conv2d(in_channels=32, out_channels=32, kernel_size= 3,stride=1, padding=1)
+    self.conv3 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size= 3,stride=1, padding=1)
+    self.conv4 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size= 3,stride=1, padding=1)
+    self.conv5 = nn.Conv2d(in_channels=128, out_channels=256, kernel_size= 3,stride=1, padding=1)
+    self.conv6 = nn.Conv2d(in_channels=256, out_channels=512, kernel_size= 3,stride=1, padding=1)
+    self.conv7 = nn.Conv2d(in_channels=512, out_channels=512, kernel_size= 3,stride=1, padding=1) #new
+
+    self.bn1 = nn.BatchNorm1d(32*32*32)
+    self.bn2 = nn.BatchNorm1d(32*32*32)
+    self.bn3 = nn.BatchNorm1d(16*16*64)
+    self.bn4 = nn.BatchNorm1d(16*16*128)
+    self.bn5 = nn.BatchNorm1d(16*16*256)
+    self.bn6 = nn.BatchNorm1d(16*16*512)
+    self.bn7 = nn.BatchNorm1d(16*16*512) #new
+
+    self.maxPool = nn.MaxPool2d(kernel_size=2,stride=2,padding=0)
+    self.avgPool = nn.AvgPool2d(kernel_size=16,padding=0)
+    ##########end of Convolutional layers###########
+    
+    ##########linear layers###################
+    self.fc1 = nn.Linear(512,512)
+    self.drop = nn.Dropout(0.5)
+    self.fc2 = nn.Linear(512,1)
+
+    self.sigmoid = nn.Sigmoid()
+
+    ############end of linear layers################
+  def forward(self,pic1,pic2):
+    x = self.aggregation(pic1,pic2)
+    x = F.relu(x)
+    x = self.drop(x)
+    x = self.sigmoid(self.fc2(x))
+    return x.view(-1)
+
+  def getfeature(self,pic):
+    batch_in = pic.shape[0]
+    x = F.relu(self.bn1(self.conv1(pic).view(batch_in,32*32*32)).view(batch_in,32,32,32))
+    x = F.relu(self.bn2(self.conv2(x).view(batch_in,32*32*32)).view(batch_in,32,32,32))
+    x = self.maxPool(x)
+    x = F.relu(self.bn3(self.conv3(x).view(batch_in,64*16*16)).view(batch_in,64,16,16))
+    x = F.relu(self.bn4(self.conv4(x).view(batch_in,128*16*16)).view(batch_in,128,16,16))
+    x = F.relu(self.bn5(self.conv5(x).view(batch_in,256*16*16)).view(batch_in,256,16,16))
+    x = F.relu(self.bn6(self.conv6(x).view(batch_in,512*16*16)).view(batch_in,512,16,16))
+    x = F.relu(self.bn6(self.conv7(x).view(batch_in,512*16*16)).view(batch_in,512,16,16)) ##new
+    x = self.avgPool(x)
+    x = x.view(-1,1*512)
+    return x
+
+    #############Aggregation##################
+  def aggregation(self,pic1,pic2):
+    #print(pic1.shape)
+    pic1_vector = self.getfeature(pic1)
+    pic2_vector = self.getfeature(pic2)
+    diff = torch.abs(torch.sub(pic1_vector,pic2_vector))
+    return diff
+    #############end of Aggregation##################
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+print(device)
+model = Siamese3()
+model = model.to(device)
+num_epochs = 20
+eval_every = 10
+total_step = len(loader)*num_epochs
+best_val_loss = None
+criterion = nn.BCELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+
+TRAIN(model, loader, valid_loader, num_epochs, eval_every,
+      total_step, criterion, optimizer, best_val_loss, device ,'model6_net.pt', 'Loss_M6.png')
+
+load_checkpoint(model,optimizer,'model6_net.pt')
+getThreshold(valid_loader,model,'T6.png')
+#####################################end of model 6
+
+###########model 7
+class Siamese4(nn.Module):
+  def __init__(self):
+    super(Siamese4, self).__init__()
+    #####Convolutional layers###############
+    self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size= 3,stride=1, padding=1)
+    self.conv2 = nn.Conv2d(in_channels=32, out_channels=32, kernel_size= 3,stride=1, padding=1)
+    self.conv3 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size= 3,stride=1, padding=1)
+    self.conv4 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size= 3,stride=1, padding=1) #####new
+    self.conv5 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size= 3,stride=1, padding=1)
+    self.conv6 = nn.Conv2d(in_channels=128, out_channels=256, kernel_size= 3,stride=1, padding=1)
+    self.conv7 = nn.Conv2d(in_channels=256, out_channels=512, kernel_size= 3,stride=1, padding=1)
+
+    self.bn1 = nn.BatchNorm1d(32*32*32)
+    self.bn2 = nn.BatchNorm1d(32*32*32)
+    self.bn3 = nn.BatchNorm1d(16*16*64)
+    self.bn4 = nn.BatchNorm1d(16*16*64)
+    self.bn5 = nn.BatchNorm1d(16*16*128)
+    self.bn6 = nn.BatchNorm1d(16*16*256)
+    self.bn7 = nn.BatchNorm1d(16*16*512)
+
+    self.maxPool = nn.MaxPool2d(kernel_size=2,stride=2,padding=0)
+    self.avgPool = nn.AvgPool2d(kernel_size=16,padding=0)
+    ##########end of Convolutional layers###########
+    
+    ##########linear layers###################
+    self.fc1 = nn.Linear(512,512)
+    self.drop = nn.Dropout(0.5)
+    self.fc2 = nn.Linear(512,1)
+
+    self.sigmoid = nn.Sigmoid()
+
+    ############end of linear layers################
+  def forward(self,pic1,pic2):
+    x = self.aggregation(pic1,pic2)
+    #print(x.shape)
+    x = F.relu(x)
+    #print(x.shape)
+    x = self.drop(x)
+    #print(x.shape)
+    x = self.sigmoid(self.fc2(x))
+    y = x
+    return x.view(-1)
+
+  def getfeature(self,pic):
+    batch_in = pic.shape[0]
+    x = F.relu(self.bn1(self.conv1(pic).view(batch_in,32*32*32)).view(batch_in,32,32,32))
+    x = F.relu(self.bn2(self.conv2(x).view(batch_in,32*32*32)).view(batch_in,32,32,32))
+    x = self.maxPool(x)
+    x = F.relu(self.bn3(self.conv3(x).view(batch_in,64*16*16)).view(batch_in,64,16,16))
+    x = F.relu(self.bn4(self.conv4(x).view(batch_in,64*16*16)).view(batch_in,64,16,16))
+    x = F.relu(self.bn5(self.conv5(x).view(batch_in,128*16*16)).view(batch_in,128,16,16))
+    x = F.relu(self.bn6(self.conv6(x).view(batch_in,256*16*16)).view(batch_in,256,16,16))
+    x = F.relu(self.bn7(self.conv7(x).view(batch_in,512*16*16)).view(batch_in,512,16,16))
+    x = self.avgPool(x)
+    x = x.view(-1,1*512)
+    # print(x.shape)
+    return x
+
+    #############Aggregation##################
+  def aggregation(self,pic1,pic2):
+    #print(pic1.shape)
+    pic1_vector = self.getfeature(pic1)
+    pic2_vector = self.getfeature(pic2)
+    diff = torch.abs(torch.sub(pic1_vector,pic2_vector))
+    return diff
+    #############end of Aggregation##################
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+print(device)
+model = Siamese4()
+model = model.to(device)
+num_epochs = 20
+eval_every = 10
+total_step = len(loader)*num_epochs
+best_val_loss = None
+criterion = nn.BCELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+
+TRAIN(model, loader, valid_loader, num_epochs, eval_every,
+      total_step, criterion, optimizer, best_val_loss, device ,'model7_net.pt', 'Loss_M7.png')
+
+load_checkpoint(model,optimizer,'model7_net.pt')
+getThreshold(valid_loader,model,'T7.png')
+########################end of model 7 ##############
+
