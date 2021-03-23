@@ -263,4 +263,4 @@ def load_checkpoint(model, optimizer, save_path):
 model = Siamese()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 load_checkpoint(model,optimizer,'model1_net.pt')
-getThreshold(valid_loader,model)
+getThreshold(valid_loader,model.to(device))

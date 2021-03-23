@@ -141,9 +141,9 @@ def getThreshold(valid_loader,model):
             check = 1
           if check == val_labels[i]:
             total_correct += 1
-      print(str(thres)+"  "+str(total_correct/total_cmp))
-      acc.append(total_correct/total_cmp)
-      pltThreshold(theta,acc)
+    print(str(thres)+"  "+str(total_correct/total_cmp))
+    acc.append(total_correct/total_cmp)
+  pltThreshold(theta,acc)
   return acc
 
 def load_checkpoint(model, optimizer, save_path):
@@ -157,4 +157,4 @@ def load_checkpoint(model, optimizer, save_path):
 model = Siamese()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 load_checkpoint(model,optimizer,'model1_net.pt')
-getThreshold(valid_loader,model)
+getThreshold(valid_loader,model.to(device))
