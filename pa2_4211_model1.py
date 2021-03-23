@@ -137,7 +137,7 @@ def plotLoss(train,val,step):
   plt.savefig('trainVsVal.png',dpi=300)
 
 
-def TRAIN(net, train_loader, valid_loader,  num_epochs, eval_every, total_step, criterion, optimizer, val_loss, device):
+def TRAIN(net, train_loader, valid_loader,  num_epochs, eval_every, total_step, criterion, optimizer, val_loss, device, save_path):
     trainset_loss = []
     valset_loss = []
     step = []
@@ -207,18 +207,27 @@ def TRAIN(net, train_loader, valid_loader,  num_epochs, eval_every, total_step, 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(device)
 model = Siamese()
+model = model.to(device)
 num_epochs = 20
 eval_every = 10
 total_step = len(loader)*num_epochs
 best_val_loss = None
 criterion = nn.BCELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-model = model.to(device)
+
 
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
-      total_step, criterion, optimizer, best_val_loss, device)
+      total_step, criterion, optimizer, best_val_loss, device, 'model1_net.pt')
 
 
+
+def pltThreshold(thres,acc):
+  plt.plot(thres,acc)
+  plt.xlabel('threshold')
+  plt.ylabel('accuracy')
+  plt.title('threshold vs accuracy')
+  plt.legend()
+  plt.savefig('TvsAcc.png',dpi=300)
 
 def getThreshold(valid_loader,model):
   theta = np.linspace(0.4,1,60, False)
@@ -241,7 +250,17 @@ def getThreshold(valid_loader,model):
             total_correct += 1
       print(str(thres)+"  "+str(total_correct/total_cmp))
       acc.append(total_correct/total_cmp)
+      pltThreshold(theta,acc)
   return acc
 
+def load_checkpoint(model, optimizer, save_path):
+    state_dict = torch.load(save_path)
+    model.load_state_dict(state_dict['model_state_dict'])
+    optimizer.load_state_dict(state_dict['optimizer_state_dict'])
+    val_loss = state_dict['val_loss']
+    print(f'Model loaded from <== {save_path}')
 
+model = Siamese()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+load_checkpoint(model,optimizer,'model1_net.pt')
 getThreshold(valid_loader,model)

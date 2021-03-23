@@ -46,12 +46,11 @@ class CustomDataset(Dataset):
 
 
 
+train = CustomDataset(os.path.join(PATH,'train.csv'),os.path.join(PATH,'index.txt'),'asd')
+valid = CustomDataset(os.path.join(PATH,'train.csv'),os.path.join(PATH,'index.txt'),'asd')
 test = CustomDataset(os.path.join(PATH,'train.csv'),os.path.join(PATH,'index.txt'),'asd')
-train_size = int(0.8*len(test)) ## __len__
-valid_size = len(test) - train_size
-full_train, full_valid = random_split(test, [train_size, valid_size])
-loader = torch.utils.data.DataLoader(full_train, batch_size=128, shuffle=True, num_workers=2)
-valid_loader = torch.utils.data.DataLoader(full_valid, batch_size=128, shuffle=False, num_workers=2)
+loader = torch.utils.data.DataLoader(train, batch_size=128, shuffle=True, num_workers=2)
+valid_loader = torch.utils.data.DataLoader(valid, batch_size=128, shuffle=False, num_workers=2)
 
 
 
@@ -115,18 +114,16 @@ class Siamese(nn.Module):
 
 
 
-
-def load_checkpoint(model, optimizer):
-    save_path = f'test_net.pt'
-    state_dict = torch.load(save_path)
-    model.load_state_dict(state_dict['model_state_dict'])
-    optimizer.load_state_dict(state_dict['optimizer_state_dict'])
-    val_loss = state_dict['val_loss']
-    print(f'Model loaded from <== {save_path}')
-
+def pltThreshold(thres,acc):
+  plt.plot(thres,acc)
+  plt.xlabel('threshold')
+  plt.ylabel('accuracy')
+  plt.title('threshold vs accuracy')
+  plt.legend()
+  plt.savefig('TvsAcc.png',dpi=300)
 
 def getThreshold(valid_loader,model):
-  theta = np.linspace(0,1,100, False)
+  theta = np.linspace(0.4,1,60, False)
   acc  = []
   for thres in theta:
     total_correct = 0
@@ -146,12 +143,18 @@ def getThreshold(valid_loader,model):
             total_correct += 1
       print(str(thres)+"  "+str(total_correct/total_cmp))
       acc.append(total_correct/total_cmp)
+      pltThreshold(theta,acc)
   return acc
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-print(device)
+def load_checkpoint(model, optimizer, save_path):
+    state_dict = torch.load(save_path)
+    model.load_state_dict(state_dict['model_state_dict'])
+    optimizer.load_state_dict(state_dict['optimizer_state_dict'])
+    val_loss = state_dict['val_loss']
+    print(f'Model loaded from <== {save_path}')
+
+
 model = Siamese()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-load_checkpoint(model,optimizer)
-getThreshold(valid_loader,model.to(device))
-    
+load_checkpoint(model,optimizer,'model1_net.pt')
+getThreshold(valid_loader,model)
