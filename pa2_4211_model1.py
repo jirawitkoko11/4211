@@ -199,7 +199,7 @@ def TRAIN(net, train_loader, valid_loader,  num_epochs, eval_every, total_step, 
                     
                     if average_val_loss < best_val_loss:
                         best_val_loss = average_val_loss
-                        save_checkpoint('test_net.pt', net, optimizer, best_val_loss)
+                        save_checkpoint(save_path, net, optimizer, best_val_loss)
 
     plotLoss(trainset_loss,valset_loss,step)
 
