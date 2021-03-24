@@ -229,7 +229,7 @@ def pltThreshold(thres,acc,bestT,bestA,save_path):
   plt.savefig(save_path,dpi=300)
 
 def getThreshold(valid_loader,model,save_path):
-  theta = np.linspace(0.4,0.9,20, False)
+  theta = np.linspace(0.45,0.85,20, False)
   acc  = []
   bestT = 0
   bestA = 0
@@ -264,6 +264,7 @@ def load_checkpoint(model, optimizer, save_path):
     val_loss = state_dict['val_loss']
     print(f'Model loaded from <== {save_path}')
 
+print("findding the best threshold for the model")
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 model = Siamese()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -293,6 +294,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.01)  #### change learning rate t
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model2_net.pt','Loss_M2.png')
 
+print("findding the best threshold for the model")
 load_checkpoint(model,optimizer,'model2_net.pt')
 getThreshold(valid_loader,model.to(device),'T2.png')
 ##########################end of model 1
@@ -314,6 +316,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay = 0.01)  #####
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model3_net.pt','Loss_M3.png')
 
+print("findding the best threshold for the model")
 load_checkpoint(model,optimizer,'model3_net.pt')
 getThreshold(valid_loader,model.to(device),'T3.png')
 ##########################end of model 2
@@ -334,6 +337,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model4_net.pt','Loss_M4.png')
 
+print("findding the best threshold for the model")
 load_checkpoint(model,optimizer,'model4_net.pt')
 getThreshold(valid_loader,model.to(device),'T4.png')
 ##########################end of model 3
@@ -418,6 +422,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model5_net.pt', 'Loss_M5.png')
 
+print("findding the best threshold for the model")
 load_checkpoint(model,optimizer,'model5_net.pt')
 getThreshold(valid_loader,model.to(device),'T5.png')
 
@@ -500,6 +505,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model6_net.pt', 'Loss_M6.png')
 
+print("findding the best threshold for the model")
 load_checkpoint(model,optimizer,'model6_net.pt')
 getThreshold(valid_loader,model.to(device),'T6.png')
 #####################################end of model 6
@@ -586,6 +592,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model7_net.pt', 'Loss_M7.png')
 
+print("findding the best threshold for the model")
 load_checkpoint(model,optimizer,'model7_net.pt')
 getThreshold(valid_loader,model.to(device),'T7.png')
 ########################end of model 7 ##############
