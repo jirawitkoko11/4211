@@ -1,4 +1,4 @@
-import * from utilitiesAndClasses
+from utilitiesAndClasses import *
 
 #############model 3 ############################
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')

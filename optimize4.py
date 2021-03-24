@@ -1,4 +1,4 @@
-import * from utilitiesAndClasses
+from utilitiesAndClasses import *
 
 class Siamese2(nn.Module):
   def __init__(self):
