@@ -126,7 +126,7 @@ def pltThreshold(thres,acc,bestT,bestA,save_path):
   plt.savefig(save_path,dpi=300)
 
 def getThreshold(valid_loader,model,save_path):
-  theta = np.linspace(0.4,0.9,50, False)
+  theta = np.linspace(0.4,0.9,20, False)
   acc  = []
   bestT = 0
   bestA = 0
@@ -147,13 +147,12 @@ def getThreshold(valid_loader,model,save_path):
           if check == val_labels[i]:
             total_correct += 1
     running_acc = total_correct/total_cmp
-    #print(str(thres)+"  "+str(running_acc))
+    print(str(thres)+"  "+str(running_acc))
     if(bestA < running_acc):
       bestA = running_acc
       bestT = thres
     acc.append(total_correct/total_cmp)
   pltThreshold(theta,acc,bestT,bestA,save_path)
-  return acc
 
 def load_checkpoint(model, optimizer, save_path):
     state_dict = torch.load(save_path)
@@ -162,9 +161,10 @@ def load_checkpoint(model, optimizer, save_path):
     val_loss = state_dict['val_loss']
     print(f'Model loaded from <== {save_path}')
 
-
-model = Siamese()
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+model = Siamese3()
 optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay = 0.01)  ######### add only weight_decay
 
+print("findding the best threshold for the model")
 load_checkpoint(model,optimizer,'model6_net.pt')
 getThreshold(valid_loader,model.to(device),'T6.png')
