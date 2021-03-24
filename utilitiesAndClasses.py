@@ -47,10 +47,11 @@ class CustomDataset(Dataset):
 
 
 train = CustomDataset(os.path.join(PATH,'train.csv'),os.path.join(PATH,'index.txt'),'asd')
-valid = CustomDataset(os.path.join(PATH,'train.csv'),os.path.join(PATH,'index.txt'),'asd')
-test = CustomDataset(os.path.join(PATH,'train.csv'),os.path.join(PATH,'index.txt'),'asd')
+valid = CustomDataset(os.path.join(PATH,'valid.csv'),os.path.join(PATH,'index.txt'),'asd')
+test = CustomDataset(os.path.join(PATH,'test.csv'),os.path.join(PATH,'index.txt'),'asd')
 loader = torch.utils.data.DataLoader(train, batch_size=128, shuffle=True, num_workers=2)
 valid_loader = torch.utils.data.DataLoader(valid, batch_size=128, shuffle=False, num_workers=2)
+test_loader = torch.utils.data.DataLoader(test, batch_size=1, shuffle=False, num_workers=2)
 
 
 def save_checkpoint(save_path, model, optimizer, val_loss):
