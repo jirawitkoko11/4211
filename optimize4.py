@@ -66,7 +66,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(device)
 model = Siamese2()
 model = model.to(device)
-num_epochs = 30 ####increase number of epochs
+num_epochs = 20
 eval_every = 10
 total_step = len(loader)*num_epochs
 best_val_loss = None
