@@ -73,6 +73,7 @@ def plotLoss(train,val,step, save_path):
   plt.title('train vs validation loss')
   plt.legend()
   plt.savefig(save_path,dpi=300)
+  plt.show()
 
 
 def TRAIN(net, train_loader, valid_loader,  num_epochs, eval_every, total_step, criterion, optimizer, val_loss, device, save_path, plot_path):
@@ -148,6 +149,7 @@ def pltThreshold(thres,acc,bestT,bestA,save_path):
   plt.ylabel('accuracy')
   plt.title('threshold vs accuracy\n best theta = %.3f which gives %.4f accuracy' % (bestT,bestA))
   plt.savefig(save_path,dpi=300)
+  plt.show()
 
 def getThreshold(valid_loader,model,save_path):
   theta = np.linspace(0.45,0.85,20, False)
