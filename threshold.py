@@ -158,8 +158,9 @@ def load_checkpoint(model, optimizer, save_path):
     val_loss = state_dict['val_loss']
     print(f'Model loaded from <== {save_path}')
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
 model = Siamese()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-load_checkpoint(model,optimizer,'model1_net.pt')
-getThreshold(valid_loader,model.to(device),'T1.png')
+optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay = 0.01)  ######### add only weight_decay
+
+load_checkpoint(model,optimizer,'model6_net.pt')
+getThreshold(valid_loader,model.to(device),'T6.png')
