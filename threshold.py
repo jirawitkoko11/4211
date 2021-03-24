@@ -122,7 +122,7 @@ def pltThreshold(thres,acc,bestT,bestA,save_path):
   plt.plot(thres,acc)
   plt.xlabel('threshold')
   plt.ylabel('accuracy')
-  plt.title('threshold vs accuracy\n best theta = %.3f which gives %.4f accuracy',(bestT,bestA))
+  plt.title('threshold vs accuracy\n best theta = %.3f which gives %.4f accuracy' % (bestT,bestA))
   plt.savefig(save_path,dpi=300)
 
 def getThreshold(valid_loader,model,save_path):

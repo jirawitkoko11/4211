@@ -225,11 +225,11 @@ def pltThreshold(thres,acc,bestT,bestA,save_path):
   plt.plot(thres,acc)
   plt.xlabel('threshold')
   plt.ylabel('accuracy')
-  plt.title('threshold vs accuracy\n best theta = %.3f which gives %.4f accuracy',(bestT,bestA))
+  plt.title('threshold vs accuracy\n best theta = %.3f which gives %.4f accuracy' % (bestT,bestA))
   plt.savefig(save_path,dpi=300)
 
 def getThreshold(valid_loader,model,save_path):
-  theta = np.linspace(0.4,0.9,50, False)
+  theta = np.linspace(0.4,0.9,20, False)
   acc  = []
   bestT = 0
   bestA = 0
@@ -250,13 +250,12 @@ def getThreshold(valid_loader,model,save_path):
           if check == val_labels[i]:
             total_correct += 1
     running_acc = total_correct/total_cmp
-    #print(str(thres)+"  "+str(running_acc))
+    print(str(thres)+"  "+str(running_acc))
     if(bestA < running_acc):
       bestA = running_acc
       bestT = thres
     acc.append(total_correct/total_cmp)
   pltThreshold(theta,acc,bestT,bestA,save_path)
-  return acc
 
 def load_checkpoint(model, optimizer, save_path):
     state_dict = torch.load(save_path)
@@ -290,7 +289,7 @@ eval_every = 10
 total_step = len(loader)*num_epochs
 best_val_loss = None
 criterion = nn.BCELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay = 0.001)  #### change learning rate to 0.01 and add weight_decay
+optimizer = optim.Adam(model.parameters(), lr=0.01)  #### change learning rate to 0.01 
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model2_net.pt','Loss_M2.png')
 
@@ -304,8 +303,8 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(device)
 model = Siamese()
 model = model.to(device)
-num_epochs = 1
-eval_every = 4
+num_epochs = 20
+eval_every = 10
 total_step = len(loader)*num_epochs
 best_val_loss = None
 criterion = nn.BCELoss()
@@ -330,10 +329,10 @@ eval_every = 10
 total_step = len(loader)*num_epochs
 best_val_loss = None
 criterion = nn.BCELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay = 0.001) ######add weight_decay
+optimizer = optim.Adam(model.parameters(), lr=0.001) 
 
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
-      total_step, criterion, optimizer, best_val_loss, device ,' model4_net.pt','Loss_M4.png')
+      total_step, criterion, optimizer, best_val_loss, device ,'model4_net.pt','Loss_M4.png')
 
 load_checkpoint(model,optimizer,'model4_net.pt')
 getThreshold(valid_loader,model.to(device),'T4.png')
