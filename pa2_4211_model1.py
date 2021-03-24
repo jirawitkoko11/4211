@@ -295,7 +295,7 @@ TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model2_net.pt','Loss_M2.png')
 
 load_checkpoint(model,optimizer,'model2_net.pt')
-getThreshold(valid_loader,model,'T2.png')
+getThreshold(valid_loader,model.to(device),'T2.png')
 ##########################end of model 1
 
 
@@ -316,7 +316,7 @@ TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model3_net.pt','Loss_M3.png')
 
 load_checkpoint(model,optimizer,'model3_net.pt')
-getThreshold(valid_loader,model,'T3.png')
+getThreshold(valid_loader,model.to(device),'T3.png')
 ##########################end of model 2
 
 
@@ -336,7 +336,7 @@ TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,' model4_net.pt','Loss_M4.png')
 
 load_checkpoint(model,optimizer,'model4_net.pt')
-getThreshold(valid_loader,model,'T4.png')
+getThreshold(valid_loader,model.to(device),'T4.png')
 ##########################end of model 3
 
 ########################################################end of change optimizer #####################################
@@ -420,7 +420,7 @@ TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model5_net.pt', 'Loss_M5.png')
 
 load_checkpoint(model,optimizer,'model5_net.pt')
-getThreshold(valid_loader,model,'T5.png')
+getThreshold(valid_loader,model.to(device),'T5.png')
 
 #####################################end of model 5
 
@@ -502,7 +502,7 @@ TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model6_net.pt', 'Loss_M6.png')
 
 load_checkpoint(model,optimizer,'model6_net.pt')
-getThreshold(valid_loader,model,'T6.png')
+getThreshold(valid_loader,model.to(device),'T6.png')
 #####################################end of model 6
 
 ###########model 7
@@ -588,6 +588,6 @@ TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model7_net.pt', 'Loss_M7.png')
 
 load_checkpoint(model,optimizer,'model7_net.pt')
-getThreshold(valid_loader,model,'T7.png')
+getThreshold(valid_loader,model.to(device),'T7.png')
 ########################end of model 7 ##############
 

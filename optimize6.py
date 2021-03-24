@@ -275,4 +275,4 @@ TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model7_net.pt', 'Loss_M7.png')
 
 load_checkpoint(model,optimizer,'model7_net.pt')
-getThreshold(valid_loader,model,'T7.png')
+getThreshold(valid_loader,model.to(device),'T7.png')

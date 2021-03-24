@@ -269,4 +269,4 @@ TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,' model4_net.pt','Loss_M4.png')
 
 load_checkpoint(model,optimizer,'model4_net.pt')
-getThreshold(valid_loader,model,'T4.png')
+getThreshold(valid_loader,model.to(device),'T4.png')
