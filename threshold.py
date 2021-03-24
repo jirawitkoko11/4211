@@ -143,7 +143,7 @@ def getThreshold(valid_loader,model,save_path):
           if check == val_labels[i]:
             total_correct += 1
     running_acc = total_correct/total_cmp
-    print(str(thres)+"  "+str(running_acc))
+    #print(str(thres)+"  "+str(running_acc))
     if(bestA < running_acc):
       bestA = running_acc
       bestT = thres
@@ -162,4 +162,4 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 model = Siamese()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 load_checkpoint(model,optimizer,'model1_net.pt')
-getThreshold(valid_loader,model.to(device),'M1TA')
+getThreshold(valid_loader,model.to(device),'T1.png')
