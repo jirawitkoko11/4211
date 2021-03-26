@@ -10,7 +10,7 @@ eval_every = 10
 total_step = len(loader)*num_epochs
 best_val_loss = None
 criterion = nn.BCELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.006, weight_decay = 0.0001)  ######### add weight_decay and change learning rate to 0.01
+optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay = 0.001)  ######### add weight_decay and change learning rate to 0.01
 
 
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
