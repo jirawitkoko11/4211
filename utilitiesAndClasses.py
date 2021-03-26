@@ -153,7 +153,7 @@ def pltThreshold(thres,acc,bestT,bestA,save_path):
   plt.close()
 
 def getThreshold(valid_loader,model,save_path):
-  theta = np.linspace(0.30,0.75,20, False)
+  theta = np.linspace(0.40,0.70,20, False)
   acc  = []
   bestT = 0
   bestA = 0
@@ -221,6 +221,7 @@ class Siamese(nn.Module):
     ############end of linear layers################
   def forward(self,pic1,pic2):
     x = self.aggregation(pic1,pic2)
+    x = self.fc1(x)
     x = F.relu(x)
     x = self.drop(x)
     x = self.sigmoid(self.fc2(x))
