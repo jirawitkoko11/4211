@@ -10,7 +10,7 @@ eval_every = 10
 total_step = len(loader)*num_epochs
 best_val_loss = None
 criterion = nn.BCELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.005 , weight_decay = 0.00001) #change learning rate to 0.01, add weight_decay
+optimizer = optim.Adam(model.parameters(), lr=0.1 , weight_decay = 0.00001) #change learning rate to 0.01, add weight_decay
 
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
       total_step, criterion, optimizer, best_val_loss, device ,'model4_net.pt','Loss_M4.png')

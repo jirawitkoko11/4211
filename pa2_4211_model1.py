@@ -32,6 +32,7 @@ class Siamese(nn.Module):
     ############end of linear layers################
   def forward(self,pic1,pic2):
     x = self.aggregation(pic1,pic2)
+    x = self.fc1(x)
     x = F.relu(x)
     x = self.drop(x)
     x = self.sigmoid(self.fc2(x))
@@ -86,3 +87,6 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 load_checkpoint(model,optimizer,'model1_net.pt')
 getThreshold(valid_loader,model.to(device),'T1.png')
 
+pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+print("number of trainable parameters ")
+print(pytorch_total_params)
