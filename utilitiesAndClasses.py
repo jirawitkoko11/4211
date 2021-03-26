@@ -51,7 +51,7 @@ valid = CustomDataset(os.path.join(PATH,'valid.csv'),os.path.join(PATH,'index.tx
 test = CustomDataset(os.path.join(PATH,'test.csv'),os.path.join(PATH,'index.txt'),'asd')
 loader = torch.utils.data.DataLoader(train, batch_size=128, shuffle=True, num_workers=2)
 valid_loader = torch.utils.data.DataLoader(valid, batch_size=128, shuffle=False, num_workers=2)
-test_loader = torch.utils.data.DataLoader(test, batch_size=1, shuffle=False, num_workers=2)
+test_loader = torch.utils.data.DataLoader(test, batch_size=128, shuffle=False, num_workers=2)
 
 
 def save_checkpoint(save_path, model, optimizer, val_loss):
@@ -153,7 +153,7 @@ def pltThreshold(thres,acc,bestT,bestA,save_path):
   plt.close()
 
 def getThreshold(valid_loader,model,save_path):
-  theta = np.linspace(0.45,0.85,20, False)
+  theta = np.linspace(0.30,0.75,20, False)
   acc  = []
   bestT = 0
   bestA = 0
