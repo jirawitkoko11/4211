@@ -34,11 +34,9 @@ class Siamese4(nn.Module):
     ############end of linear layers################
   def forward(self,pic1,pic2):
     x = self.aggregation(pic1,pic2)
-    #print(x.shape)
+    x = self.fc1(x)
     x = F.relu(x)
-    #print(x.shape)
     x = self.drop(x)
-    #print(x.shape)
     x = self.sigmoid(self.fc2(x))
     y = x
     return x.view(-1)
@@ -75,7 +73,7 @@ eval_every = 10
 total_step = len(loader)*num_epochs
 best_val_loss = None
 criterion = nn.BCELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.005, weight_decay = 0.0001) #change learning_rate to 0.01
+optimizer = optim.Adam(model.parameters(), lr=0.01 , weight_decay = 0.001) #change learning_rate to 0.01
 
 
 TRAIN(model, loader, valid_loader, num_epochs, eval_every,
