@@ -26,11 +26,11 @@ class CustomDataset(Dataset):
     self.imgPath = img_path
 
   def __getitem__(self,idx):
-    ind1 = self.df.iloc[idx].id1 
+    ind1 = self.df.iloc[idx].id1
     ind2 = self.df.iloc[idx].id2
     label = self.df.iloc[idx].target
-    img1_path = os.path.join(PATH,self.txt.iloc[ind1-1].path)
-    img2_path = os.path.join(PATH,self.txt.iloc[ind2-1].path)
+    img1_path = os.path.join(PATH,self.txt.iloc[int(ind1-1)].path)
+    img2_path = os.path.join(PATH,self.txt.iloc[int(ind2-1)].path)
     
     return self.transformPic(img1_path),self.transformPic(img2_path),label
     
